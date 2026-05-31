@@ -29,7 +29,7 @@ def load_negative_images(negatives_dir='negatives'):
     return negatives
 
 def run_alarm():
-    print("--- Toothbrush Alarm Project (Strict Local Mode) ---")
+    print("--- Toothbrush Alarm Project ---")
     ref_path = 'reference_toothbrush.jpg'
     negatives_dir = 'negatives'
     os.makedirs(negatives_dir, exist_ok=True)
@@ -57,7 +57,7 @@ def run_alarm():
     print("Sistem pregatit. Pornire alarma in 5 secunde...")
     time.sleep(5)
     
-    print("\n⏰ ALARM RINGING! WAKE UP! ⏰\n")
+    print("\n⏰ ALARMA SUNA! TREZESTE-TE! ⏰\n")
     stop_alarm_event.clear()
     alarm_thread = threading.Thread(target=beep_thread_worker, daemon=True)
     alarm_thread.start()
@@ -78,7 +78,7 @@ def run_alarm():
             
             print(f"Corelatie textura cu profilul: {corr_ref:.3f}")
             
-            # Verificare imagini negative (obiecte blocate manual în trecut)
+            # Verificare imagini negative
             neg_reject = False
             for neg_img in negative_images:
                 corr_neg = gray_correlation(neg_img, captured_image)

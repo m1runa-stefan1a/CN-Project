@@ -5,7 +5,6 @@ import sys
 from svd import svd_hand
 
 def has_meaningful_object(edges, min_edge_pixels=50, min_bounding_area=100):
-    """ Verifică dacă există un obiect real în cadru sau doar zgomot. """
     coords = cv2.findNonZero(edges)
     if coords is None:
         return False
@@ -15,7 +14,6 @@ def has_meaningful_object(edges, min_edge_pixels=50, min_bounding_area=100):
     return True
 
 def get_aligned_gray(image, crop=True):
-    """ Extrage și aliniază imaginea în scală de gri la o dimensiune fixă de 100x100. """
     if image is None or image.size == 0:
         return None
     h, w = image.shape[:2]
@@ -45,7 +43,6 @@ def get_aligned_gray(image, crop=True):
     return cv2.resize(gray, (100, 100))
 
 def gray_correlation(ref_image, cap_image, crop=True):
-    """ Corelația Pearson între imaginile în scală de gri. """
     ref_gray = get_aligned_gray(ref_image, crop)
     cap_gray = get_aligned_gray(cap_image, crop)
     if ref_gray is None or cap_gray is None:
@@ -57,7 +54,6 @@ def gray_correlation(ref_image, cap_image, crop=True):
     return np.mean((ref_vec - np.mean(ref_vec)) * (cap_vec - np.mean(cap_vec))) / (ref_std * cap_std)
 
 def extract_features(image, k=15, crop=True, require_object=True):
-    """ Extrage vectorul de caracteristici (valorile singulare SVD normalizate). """
     if image is None or image.size == 0:
         return None
     h, w = image.shape[:2]
@@ -95,7 +91,6 @@ def extract_features(image, k=15, crop=True, require_object=True):
     return Sigma / norm if norm > 0 else Sigma
 
 def is_toothbrush(captured_image, reference_features, threshold=0.15, captured_features=None):
-    """ Compară imaginea curentă cu profilul tău salvat prin Distanța Cosinus. """
     if captured_features is None:
         captured_features = extract_features(captured_image)
     if captured_features is None:
@@ -106,7 +101,6 @@ def is_toothbrush(captured_image, reference_features, threshold=0.15, captured_f
     return distance < threshold
 
 def capture_image():
-    """ Pornire cameră web și captură cadru la apăsarea tastei SPACE. """
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) if sys.platform == 'win32' else cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Eroare: Nu am putut accesa camera web.")
