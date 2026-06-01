@@ -29,12 +29,12 @@ def load_negative_images(negatives_dir='negatives'):
     return negatives
 
 def run_alarm():
+    from datetime import datetime  
     print("--- Toothbrush Alarm Project ---")
     ref_path = 'reference_toothbrush.jpg'
     negatives_dir = 'negatives'
     os.makedirs(negatives_dir, exist_ok=True)
     
-    # Înregistrare profil inițial dacă nu există
     if not os.path.exists(ref_path):
         print("\n=== INREGISTRARE PERIUTA ===")
         print("Nu am gasit un profil salvat. Te rog sa pozezi periuta ta.")
@@ -54,9 +54,25 @@ def run_alarm():
         
     reference_features = extract_features(reference_image)
     negative_images = load_negative_images(negatives_dir)
-    print("Sistem pregatit. Pornire alarma in 5 secunde...")
-    time.sleep(5)
     
+    while True:
+        ora_input = input("Introdu ora la care să sune alarma (format HH:MM, de ex. 07:30): ").strip()
+        try:
+            tinta_ora, tinta_minut = map(int, ora_input.split(':'))
+            if 0 <= tinta_ora < 24 and 0 <= tinta_minut < 60:
+                break
+            print("❌ Ora trebuie să fie între 00-23, iar minutele între 00-59.")
+        except ValueError:
+            print("❌ Format invalid! Te rog folosește formatul exact HH:MM.")
+
+    print(f"Sistem pregătit. Alarma va suna la {tinta_ora:02d}:{tinta_minut:02d}. Se așteaptă...")
+    
+    while True:
+        acum = datetime.now()
+        if acum.hour == tinta_ora and acum.minute == tinta_minut:
+            break
+        time.sleep(1) 
+     
     print("\n⏰ ALARMA SUNA! TREZESTE-TE! ⏰\n")
     stop_alarm_event.clear()
     alarm_thread = threading.Thread(target=beep_thread_worker, daemon=True)
@@ -78,7 +94,6 @@ def run_alarm():
             
             print(f"Corelatie textura cu profilul: {corr_ref:.3f}")
             
-            # Verificare imagini negative
             neg_reject = False
             for neg_img in negative_images:
                 corr_neg = gray_correlation(neg_img, captured_image)
@@ -108,6 +123,5 @@ def run_alarm():
                 print("❌ Textura sau culoarea nu corespund.")
         else:
             print("Eroare la captura foto.")
-            
 if __name__ == "__main__":
     run_alarm()
